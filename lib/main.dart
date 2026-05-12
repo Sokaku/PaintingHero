@@ -8,11 +8,11 @@ import 'screens/login_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Supabase
-  // await Supabase.initialize(
-  //   url: 'YOUR_SUPABASE_URL',
-  //   anonKey: 'YOUR_SUPABASE_ANON_KEY',
-  // );
+   //Initialize Supabase
+   await Supabase.initialize(
+     url: 'euadogyusjlhwatkfveo',
+     anonKey: 'sb_publishable_VlPe3PJOX3yR4gr1nwk9pQ_7vxJqMQa',
+   );
 
   runApp(
     const ProviderScope(
