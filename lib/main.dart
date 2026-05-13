@@ -8,11 +8,16 @@ import 'screens/login_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-   //Initialize Supabase
-   await Supabase.initialize(
-     url: 'euadogyusjlhwatkfveo',
-     anonKey: 'sb_publishable_VlPe3PJOX3yR4gr1nwk9pQ_7vxJqMQa',
-   );
+  try {
+    debugPrint("--- Iniciando Supabase ---");
+    await Supabase.initialize(
+      url: 'https://euadogyusjlhwatkfveo.supabase.co',
+      anonKey: 'sb_publishable_VlPe3PJOX3yR4gr1nwk9pQ_7vxJqMQa',
+    );
+    debugPrint("--- Supabase inicializado correctamente ---");
+  } catch (e) {
+    debugPrint("--- ERROR al inicializar Supabase: $e ---");
+  }
 
   runApp(
     const ProviderScope(
