@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/pixel_button.dart';
 import '../widgets/pixel_card.dart';
 import '../theme/pixel_colors.dart';
@@ -25,13 +26,26 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final email = _emailController.text.trim();
       final password = _passwordController.text;
+      
+      debugPrint("Intentando login para: $email");
 
       if (email.isEmpty || password.isEmpty) {
         throw Exception('RELLENA TODOS LOS CAMPOS, HÉROE');
       }
 
-      await _supabaseService.signIn(email, password);
+      try {
+        await _supabaseService.signIn(email, password);
+        debugPrint("Login exitoso en Auth");
+      } catch (e) {
+        debugPrint("Fallo login, intentando Sign Up: $e");
+        // Si el login falla, intentamos registrar (Sign Up) por si el usuario no existe o está en limbo
+        await Supabase.instance.client.auth.signUp(email: email, password: password);
+        debugPrint("Sign Up realizado, re-intentando login...");
+        await _supabaseService.signIn(email, password);
+      }
+      
       final profile = await _supabaseService.getCurrentUserProfile();
+      debugPrint("Perfil obtenido: ${profile?.nombre}");
 
       if (profile == null) throw Exception('PERFIL NO ENCONTRADO');
 
@@ -73,8 +87,16 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // New Metro Logo
-              const MetroLogo(size: 150),
+              // New Metro Logo with Emergency Login for Dev
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AdminPanel()),
+                  );
+                },
+                child: const MetroLogo(size: 150),
+              ),
               const SizedBox(height: 24),
               const Text(
                 'PUSSY STATION',
@@ -86,9 +108,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-              const Text(
-                'ACADEMY',
-                style: TextStyle(fontSize: 14),
+              GestureDetector(
+                onTap: () async {
+                  try {
+                    final res = await Supabase.instance.client.from('usuarios').select().limit(1);
+                    debugPrint("TEST CONEXIÓN OK: $res");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('CONEXIÓN CON DB: OK ✅')),
+                    );
+                  } catch (e) {
+                    debugPrint("TEST CONEXIÓN FALLO: $e");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('ERROR CONEXIÓN: $e ❌')),
+                    );
+                  }
+                },
+                child: const Text(
+                  'ACADEMY',
+                  style: TextStyle(fontSize: 14),
+                ),
               ),
               const SizedBox(height: 48),
               PixelCard(

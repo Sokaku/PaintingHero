@@ -9,7 +9,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    debugPrint("--- Iniciando Supabase ---");
     await Supabase.initialize(
       url: 'https://euadogyusjlhwatkfveo.supabase.co',
       anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1YWRvZ3l1c2psaHdhdGtmdmVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODUyMzYsImV4cCI6MjA5NDE2MTIzNn0._uiVX6Xy2InaIEMc7UDuXbGRgAiusYRaIHMULu2Qh4o',
