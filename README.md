@@ -1,6 +1,6 @@
-# 🎨 PaintingHero Academy
-
-A cross-platform web application for art academy management, featuring a unique **8-bit pixel art** aesthetic.
+# 🎨 Pussy Station
+...
+A cross-platform web application for art academy management, featuring a unique **8-bit pixel art** and **Paris Metro** aesthetic.
 
 ![Painter Hero](https://github.com/user-attachments/assets/logo-placeholder.png) <!-- Reemplazar con imagen real si se desea -->
 

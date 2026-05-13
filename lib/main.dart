@@ -12,7 +12,7 @@ void main() async {
     debugPrint("--- Iniciando Supabase ---");
     await Supabase.initialize(
       url: 'https://euadogyusjlhwatkfveo.supabase.co',
-      anonKey: 'sb_publishable_VlPe3PJOX3yR4gr1nwk9pQ_7vxJqMQa',
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1YWRvZ3l1c2psaHdhdGtmdmVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODUyMzYsImV4cCI6MjA5NDE2MTIzNn0._uiVX6Xy2InaIEMc7UDuXbGRgAiusYRaIHMULu2Qh4o',
     );
     debugPrint("--- Supabase inicializado correctamente ---");
   } catch (e) {
@@ -32,7 +32,7 @@ class PaintingHeroApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Painting Hero Academy',
+      title: 'Pussy Station',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.pixelTheme,
       home: const LoginScreen(),

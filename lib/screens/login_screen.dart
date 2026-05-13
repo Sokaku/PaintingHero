@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../widgets/pixel_button.dart';
 import '../widgets/pixel_card.dart';
 import '../theme/pixel_colors.dart';
+import '../widgets/metro_logo.dart';
+import '../services/supabase_service.dart';
+import 'admin_panel.dart';
+import 'student_panel.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,6 +17,52 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isLoading = false;
+  final _supabaseService = SupabaseService();
+
+  Future<void> _handleLogin() async {
+    setState(() => _isLoading = true);
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      if (email.isEmpty || password.isEmpty) {
+        throw Exception('RELLENA TODOS LOS CAMPOS, HÉROE');
+      }
+
+      await _supabaseService.signIn(email, password);
+      final profile = await _supabaseService.getCurrentUserProfile();
+
+      if (profile == null) throw Exception('PERFIL NO ENCONTRADO');
+
+      if (!mounted) return;
+
+      if (profile.rol == 0) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const AdminPanel()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => StudentPanel(user: profile)),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            e.toString().replaceAll('Exception: ', '').toUpperCase(),
+            style: const TextStyle(color: Colors.white, fontSize: 10),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,16 +73,11 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Hero Logo Placeholder
-              Container(
-                width: 100,
-                height: 100,
-                color: PixelColors.primary,
-                child: const Icon(Icons.brush, size: 60, color: Colors.white),
-              ),
+              // New Metro Logo
+              const MetroLogo(size: 150),
               const SizedBox(height: 24),
               const Text(
-                'PAINTING HERO',
+                'PUSSY STATION',
                 style: TextStyle(
                   fontSize: 24,
                   color: PixelColors.primary,
@@ -53,6 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextField(
                       controller: _emailController,
                       decoration: const InputDecoration(labelText: 'EMAIL'),
+                      keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 16),
                     TextField(
@@ -61,12 +107,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: const InputDecoration(labelText: 'PASS'),
                     ),
                     const SizedBox(height: 24),
-                    PixelButton(
-                      text: 'LOGIN',
-                      onPressed: () {
-                        // TODO: Implement Auth
-                      },
-                    ),
+                    if (_isLoading)
+                      const CircularProgressIndicator(color: PixelColors.primary)
+                    else
+                      PixelButton(
+                        text: 'LOGIN',
+                        onPressed: _handleLogin,
+                      ),
                   ],
                 ),
               ),
