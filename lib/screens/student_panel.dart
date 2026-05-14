@@ -4,6 +4,7 @@ import '../widgets/pixel_card.dart';
 import '../widgets/pixel_button.dart';
 import '../models/user_model.dart';
 import '../theme/pixel_colors.dart';
+import '../widgets/pixel_avatar.dart';
 import '../services/log_service.dart';
 
 import 'recovery_selection_screen.dart';
@@ -110,10 +111,19 @@ class _StudentPanelState extends State<StudentPanel> {
             PixelCard(
               title: 'MIS STATS',
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildStat('RECUPERACIONES', '${_currentUser.recuperacionesUsadas}/${_currentUser.maxRecuperaciones}'),
-                  _buildStat('ESTADO', _currentUser.status ? 'ACTIVO' : 'BAJA'),
+                  PixelAvatar(config: _currentUser.avatarConfig, size: 80),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildStat('RECUPERACIONES', '${_currentUser.recuperacionesUsadas}/${_currentUser.maxRecuperaciones}'),
+                        const SizedBox(height: 8),
+                        _buildStat('ESTADO', _currentUser.status ? 'ACTIVO' : 'BAJA'),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 class SchoolYearConfig {
-  final String? id;
-  final String nombre;
-  final DateTime startDate;
-  final DateTime endDate;
-  final List<int> activeDays;
-  final Map<String, dynamic> schedules;
-  final List<dynamic> holidays;
+  String? id;
+  String nombre;
+  DateTime startDate;
+  DateTime endDate;
+  List<int> activeDays;
+  Map<String, dynamic> schedules;
+  List<dynamic> holidays;
+  bool isActive; // Nuevo campo para controlar el estado real
 
   SchoolYearConfig({
     this.id,
@@ -17,17 +18,19 @@ class SchoolYearConfig {
     required this.activeDays,
     required this.schedules,
     required this.holidays,
+    this.isActive = true,
   });
 
   factory SchoolYearConfig.fromMap(Map<String, dynamic> map) {
     return SchoolYearConfig(
       id: map['id'],
-      nombre: map['nombre'],
+      nombre: map['nombre'] ?? 'CURSO ACTUAL',
       startDate: DateTime.parse(map['fecha_inicio']),
       endDate: DateTime.parse(map['fecha_fin']),
-      activeDays: List<int>.from(map['dias_semana']),
+      activeDays: List<int>.from(map['dias_semana'] ?? []),
       schedules: map['horarios'] ?? {},
       holidays: map['vacaciones'] ?? [],
+      isActive: map['activo'] ?? false, // Mapeamos el campo de la DB
     );
   }
 
@@ -39,6 +42,7 @@ class SchoolYearConfig {
       'dias_semana': activeDays,
       'horarios': schedules,
       'vacaciones': holidays,
+      'activo': isActive,
     };
   }
 
@@ -51,6 +55,7 @@ class SchoolYearConfig {
       activeDays: [1, 2, 3, 4, 5],
       schedules: {"1": "17:00-19:00", "2": "17:00-19:00", "3": "17:00-19:00", "4": "17:00-19:00", "5": "17:00-19:00"},
       holidays: [{"inicio": "2024-12-15", "fin": "2025-01-15"}],
+      isActive: true,
     );
   }
 }

@@ -12,6 +12,7 @@ class UserModel {
   final int maxRecuperaciones;
   final int recuperacionesUsadas;
   final int rol; // 0 = Admin, 1 = Student
+  final Map<String, dynamic> avatarConfig;
 
   UserModel({
     required this.id,
@@ -27,6 +28,7 @@ class UserModel {
     this.maxRecuperaciones = 2,
     this.recuperacionesUsadas = 0,
     required this.rol,
+    this.avatarConfig = const {'head': 1, 'torso': 1, 'legs': 1},
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -41,9 +43,10 @@ class UserModel {
       email: json['email'],
       cuota: json['cuota']?.toDouble(),
       diasClase: List<int>.from(json['dias_clase'] ?? []),
-      maxRecuperaciones: json['max_recuperaciones'] ?? 2,
+      maxRecuperaciones: json['max_recuperaciones'] ?? 4,
       recuperacionesUsadas: json['recuperaciones_usadas'] ?? 0,
       rol: json['rol'] ?? 1,
+      avatarConfig: json['avatar_config'] ?? {'head': 1, 'torso': 1, 'legs': 1},
     );
   }
 
@@ -53,8 +56,8 @@ class UserModel {
       'nombre': nombre,
       'apellido_1': apellido1,
       'apellido_2': apellido2,
-      'fecha_alta': fechaAlta.toIso8601String().split('T')[0],
-      'fecha_baja': fechaBaja?.toIso8601String().split('T')[0],
+      'fecha_alta': fechaAlta.toIso8601String(),
+      'fecha_baja': fechaBaja?.toIso8601String(),
       'status': status,
       'email': email,
       'cuota': cuota,
@@ -62,6 +65,7 @@ class UserModel {
       'max_recuperaciones': maxRecuperaciones,
       'recuperaciones_usadas': recuperacionesUsadas,
       'rol': rol,
+      'avatar_config': avatarConfig,
     };
   }
 }
