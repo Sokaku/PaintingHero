@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 import '../widgets/pixel_card.dart';
 import '../widgets/pixel_button.dart';
 import '../widgets/pixel_avatar.dart';
@@ -178,36 +179,76 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
               TextButton(
                 onPressed: () async {
                   try {
-                    final data = {
-                      'nombre': nameController.text,
-                      'apellido_1': apellido1Controller.text,
-                      'apellido_2': apellido2Controller.text,
-                      'email': emailController.text,
-                      'dias_clase': selectedDays,
-                      'status': isActive,
-                      'avatar_config': avatarConfig,
-                      'rol': 1,
-                    };
+                    setState(() => _isLoading = true);
+                    String? userId;
 
                     if (isEditing) {
-                      await Supabase.instance.client.from('usuarios').update(data).eq('id', student.id);
+                      userId = student.id;
+                      final data = {
+                        'nombre': nameController.text,
+                        'apellido_1': apellido1Controller.text,
+                        'apellido_2': apellido2Controller.text,
+                        'email': emailController.text,
+                        'dias_clase': selectedDays,
+                        'status': isActive,
+                        'avatar_config': avatarConfig,
+                      };
+                      await Supabase.instance.client.from('usuarios').update(data).eq('id', userId);
                     } else {
-                      // Generamos ID si la DB no lo hace por defecto
-                      data['id'] = DateTime.now().millisecondsSinceEpoch.toString();
-                      data['fecha_alta'] = DateTime.now().toIso8601String();
-                      await Supabase.instance.client.from('usuarios').insert(data);
+                      // 1. REGISTRAMOS EN AUTH (USANDO EL CLIENTE ACTUAL)
+                      // Nota: En un entorno real, esto se haría vía Edge Function para no perder sesión,
+                      // pero intentaremos el registro directo.
+                      final authResponse = await Supabase.instance.client.auth.signUp(
+                        email: emailController.text,
+                        password: 'Hero${DateTime.now().year}!', // Password por defecto: Hero2024!
+                      );
+                      
+                      if (authResponse.user == null) throw 'No se pudo crear el usuario en Auth';
+                      userId = authResponse.user!.id;
+
+                      // 2. CREAMOS EL PERFIL EN LA TABLA USUARIOS
+                      final profileData = {
+                        'id': userId,
+                        'nombre': nameController.text,
+                        'apellido_1': apellido1Controller.text,
+                        'apellido_2': apellido2Controller.text,
+                        'email': emailController.text,
+                        'dias_clase': selectedDays,
+                        'status': isActive,
+                        'avatar_config': avatarConfig,
+                        'rol': 1,
+                        'fecha_alta': DateTime.now().toIso8601String(),
+                        'max_recuperaciones': 4,
+                        'recuperaciones_usadas': 0,
+                      };
+                      await Supabase.instance.client.from('usuarios').insert(profileData);
                     }
                     
                     if (mounted) {
                       Navigator.pop(context);
                       _loadStudents();
-                    }
-                  } catch (e) {
-                    if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('ERROR AL GUARDAR: $e')),
+                        const SnackBar(content: Text('ALUMNO REGISTRADO Y CUENTA DE ACCESO CREADA ✅')),
                       );
                     }
+                  } catch (e) {
+                    print('***** ERROR DETALLADO: $e');
+                    if (mounted) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: PixelColors.surface,
+                          title: const Text('ERROR DE REGISTRO', style: TextStyle(color: Colors.red)),
+                          content: Text('No se pudo crear la cuenta: $e\n\nVerifica si el email ya existe o si necesitas confirmar el correo.', 
+                            style: const TextStyle(color: Colors.white, fontSize: 10)),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(context), child: const Text('ENTENDIDO')),
+                          ],
+                        ),
+                      );
+                    }
+                  } finally {
+                    if (mounted) setState(() => _isLoading = false);
                   }
                 },
                 child: const Text('GUARDAR CAMBIOS', style: TextStyle(color: PixelColors.primary)),

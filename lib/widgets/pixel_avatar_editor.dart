@@ -25,17 +25,17 @@ class _PixelAvatarEditorState extends State<PixelAvatarEditor> {
     _config = Map.from(widget.initialConfig);
   }
 
-  void _nextPart(String key) {
+  void _nextHead() {
     setState(() {
-      int current = _config[key] ?? 1;
-      _config[key] = current < 4 ? current + 1 : 1;
+      int current = _config['head'] ?? 1;
+      _config['head'] = current < 4 ? current + 1 : 1;
     });
   }
 
-  void _prevPart(String key) {
+  void _prevHead() {
     setState(() {
-      int current = _config[key] ?? 1;
-      _config[key] = current > 1 ? current - 1 : 4;
+      int current = _config['head'] ?? 1;
+      _config['head'] = current > 1 ? current - 1 : 4;
     });
   }
 
@@ -43,52 +43,36 @@ class _PixelAvatarEditorState extends State<PixelAvatarEditor> {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: PixelColors.background,
-      insetPadding: const EdgeInsets.all(20),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          border: Border.all(color: PixelColors.primary, width: 4),
+          border: Border.all(color: PixelColors.primary, width: 2),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('VESTIDOR DE HÉROES', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: PixelColors.primary)),
-            const SizedBox(height: 32),
+            const Text('ELIGE TU IDENTIDAD', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: PixelColors.primary)),
+            const SizedBox(height: 24),
             
-            // EL PERSONAJE CON SUS CONTROLES
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white24),
-                color: Colors.black26,
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Vista previa con el nuevo layout de columna
-                  PixelAvatar(config: _config, size: 220),
-                  
-                  // Controles alineados con las 3 partes
-                  Positioned(
-                    top: 25, // Alineado con Cabeza
-                    left: 0, right: 0,
-                    child: _buildArrowRow('head'),
-                  ),
-                  Positioned(
-                    top: 95, // Alineado con Tronco
-                    left: 0, right: 0,
-                    child: _buildArrowRow('torso'),
-                  ),
-                  Positioned(
-                    top: 165, // Alineado con Piernas
-                    left: 0, right: 0,
-                    child: _buildArrowRow('legs'),
-                  ),
-                ],
-              ),
+            // Selector de cabeza con flechas
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.chevron_left, color: PixelColors.primary, size: 40),
+                  onPressed: _prevHead,
+                ),
+                const SizedBox(width: 16),
+                PixelAvatar(config: _config, size: 120),
+                const SizedBox(width: 16),
+                IconButton(
+                  icon: const Icon(Icons.chevron_right, color: PixelColors.primary, size: 40),
+                  onPressed: _nextHead,
+                ),
+              ],
             ),
             
-            const SizedBox(height: 40),
+            const SizedBox(height: 32),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -102,38 +86,12 @@ class _PixelAvatarEditorState extends State<PixelAvatarEditor> {
                     widget.onSave(_config);
                     Navigator.pop(context);
                   },
-                  child: const Text('GUARDAR ESTILO', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  child: const Text('GUARDAR', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildArrowRow(String partKey) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildArrowButton(Icons.chevron_left, () => _prevPart(partKey)),
-        _buildArrowButton(Icons.chevron_right, () => _nextPart(partKey)),
-      ],
-    );
-  }
-
-  Widget _buildArrowButton(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: PixelColors.primary,
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.5), offset: const Offset(2, 2)),
-          ],
-        ),
-        child: Icon(icon, color: Colors.black, size: 24),
       ),
     );
   }

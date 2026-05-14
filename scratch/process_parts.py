@@ -1,40 +1,41 @@
 
 import os
-from PIL import Image
+from PIL import Image, ImageOps
 
 def process_image(input_path, output_prefix, target_dir):
     if not os.path.exists(input_path):
-        print(f"Error: No se encuentra {input_path}")
         return
         
     img = Image.open(input_path).convert("RGBA")
     width, height = img.size
     part_width = width // 4
     
-    # Eliminar fondo de cuadros (checkerboard)
+    # Algoritmo de transparencia mejorado
     data = img.getdata()
     new_data = []
+    # Definimos los rangos de gris del checkerboard de forma más amplia
     for item in data:
-        # Detectar el patrón gris (claro y oscuro)
-        if (180 <= item[0] <= 215 and 180 <= item[1] <= 215 and 180 <= item[2] <= 215) or \
-           (230 <= item[0] <= 255 and 230 <= item[1] <= 255 and 230 <= item[2] <= 255):
-            new_data.append((0, 0, 0, 0)) # Transparente
+        # Si el píxel es un gris del checkerboard (típicamente r=g=b)
+        r, g, b, a = item
+        if (abs(r-g) < 5 and abs(g-b) < 5 and r > 150): 
+            new_data.append((0, 0, 0, 0))
         else:
             new_data.append(item)
     img.putdata(new_data)
 
-    # Recortar en 4 partes
+    # Recortar en 4 partes manteniendo el aspecto original (352x768)
     for i in range(4):
         left = i * part_width
         right = (i + 1) * part_width
         part = img.crop((left, 0, right, height))
         
-        # Redimensionar a 256x256
-        part = part.resize((256, 256), Image.Resampling.LANCZOS)
+        # Opcional: Recortar bordes vacíos automáticamente para que encajen mejor
+        # (Esto ayuda a que no haya "espacio" invisible arriba y abajo)
         
         output_path = os.path.join(target_dir, f"{output_prefix}_{i+1}.png")
+        # Guardamos a tamaño original o proporcional para NO achatar
         part.save(output_path, "PNG")
-        print(f"✅ Generado: {output_path}")
+        print(f"✅ Re-generado con aspecto original: {output_path}")
 
 target = "assets/images/parts"
 os.makedirs(target, exist_ok=True)
