@@ -3,13 +3,13 @@ import '../theme/pixel_colors.dart';
 
 class PixelButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color color;
 
   const PixelButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.color = PixelColors.primary,
   });
 
@@ -19,7 +19,7 @@ class PixelButton extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         decoration: BoxDecoration(
-          color: color,
+          color: onPressed == null ? Colors.grey : color,
           border: Border.all(color: PixelColors.border, width: 4),
           boxShadow: const [
             BoxShadow(

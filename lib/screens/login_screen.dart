@@ -81,83 +81,137 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // New Metro Logo with Emergency Login for Dev
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AdminPanel()),
-                  );
-                },
-                child: const MetroLogo(size: 150),
+      backgroundColor: PixelColors.background,
+      body: Stack(
+        children: [
+          // Background "Heart" from the door
+          Center(
+            child: Opacity(
+              opacity: 1.0, // More solid
+              child: Icon(
+                Icons.favorite,
+                size: MediaQuery.of(context).size.width * 1.3,
+                color: PixelColors.primary.withOpacity(0.9), // Stronger yellow
               ),
-              const SizedBox(height: 24),
-              const Text(
-                'PUSSY STATION',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: PixelColors.primary,
-                  shadows: [
-                    Shadow(color: Colors.black, offset: Offset(4, 4)),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () async {
-                  try {
-                    final res = await Supabase.instance.client.from('usuarios').select().limit(1);
-                    debugPrint("TEST CONEXIÓN OK: $res");
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('CONEXIÓN CON DB: OK ✅')),
-                    );
-                  } catch (e) {
-                    debugPrint("TEST CONEXIÓN FALLO: $e");
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('ERROR CONEXIÓN: $e ❌')),
-                    );
-                  }
-                },
-                child: const Text(
-                  'ACADEMY',
-                  style: TextStyle(fontSize: 14),
-                ),
-              ),
-              const SizedBox(height: 48),
-              PixelCard(
-                title: 'ENTER DUNGEON',
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(labelText: 'EMAIL'),
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(labelText: 'PASS'),
-                    ),
-                    const SizedBox(height: 24),
-                    if (_isLoading)
-                      const CircularProgressIndicator(color: PixelColors.primary)
-                    else
-                      PixelButton(
-                        text: 'LOGIN',
-                        onPressed: _handleLogin,
-                      ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // New Metro Logo with Emergency Login for Dev
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const AdminPanel()),
+                      );
+                    },
+                    child: const MetroLogo(size: 180),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'PUSSY STATION',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 2,
+                      shadows: [
+                        Shadow(color: Colors.black, offset: Offset(4, 4), blurRadius: 2),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      try {
+                        final res = await Supabase.instance.client.from('usuarios').select().limit(1);
+                        debugPrint("TEST CONEXIÓN OK: $res");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('CONEXIÓN CON DB: OK ✅')),
+                        );
+                      } catch (e) {
+                        debugPrint("TEST CONEXIÓN FALLO: $e");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('ERROR CONEXIÓN: $e ❌')),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'ACADEMY',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: PixelColors.primary,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 4,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 400),
+                    child: PixelCard(
+                      title: 'OPEN THE GATE',
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: _emailController,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              labelText: 'EMAIL',
+                              labelStyle: const TextStyle(color: Colors.white70),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.white, width: 2),
+                                borderRadius: BorderRadius.circular(0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: PixelColors.primary, width: 3),
+                                borderRadius: BorderRadius.circular(0),
+                              ),
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                          const SizedBox(height: 20),
+                          TextField(
+                            controller: _passwordController,
+                            obscureText: true,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              labelText: 'PASSWORD',
+                              labelStyle: const TextStyle(color: Colors.white70),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.white, width: 2),
+                                borderRadius: BorderRadius.circular(0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: PixelColors.primary, width: 3),
+                                borderRadius: BorderRadius.circular(0),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          if (_isLoading)
+                            const CircularProgressIndicator(color: PixelColors.primary)
+                          else
+                            SizedBox(
+                              width: double.infinity,
+                              height: 60,
+                              child: PixelButton(
+                                text: 'ENTER',
+                                onPressed: _handleLogin,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
