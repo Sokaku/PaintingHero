@@ -10,6 +10,9 @@ echo "📦 Extracting Flutter..."
 tar -xf flutter.tar.xz
 export PATH="$PATH:$(pwd)/flutter/bin"
 
+echo "🔧 Fixing git permissions for root environment..."
+git config --global --add safe.directory '*'
+
 echo "✅ Flutter version:"
 flutter --version --suppress-analytics
 
