@@ -23,8 +23,8 @@ class PixelAvatar extends StatelessWidget {
         border: Border.all(color: PixelColors.primary, width: 2),
       ),
       child: Image.asset(
-        'assets/images/parts/head_$headId.png',
-        fit: BoxFit.contain,
+        'assets/images/parts/head_${headId}_v2.png',
+        fit: BoxFit.cover, // Zoom total
         errorBuilder: (context, error, stackTrace) => Center(
           child: Icon(Icons.face, color: PixelColors.primary.withOpacity(0.5), size: size * 0.5),
         ),
